@@ -1,0 +1,22 @@
+.env
+.env.*
+!.env.example
+data/
+backups/
+mail-outbox/
+*.sqlite*
+*.db
+*.db-*
+*.pem
+*.key
+*.p12
+node_modules/
+coverage/
+*.log
+*.zip
+.DS_Store
+Thumbs.db
+# Unused assets from the original prototype; Herbis uses herbis.svg.
+public/icons/orbit.svg
+public/icons/orbit-192.png
+public/icons/orbit-512.png

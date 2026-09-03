@@ -1,0 +1,48 @@
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3000
+      APP_ORIGIN: https://${DOMAIN:?Set DOMAIN in .env}
+      DB_PATH: /data/orbit.sqlite
+      BACKUP_DIR: /backups
+      TRUST_PROXY: "true"
+    volumes:
+      - orbit_data:/data
+      - orbit_backups:/backups
+    expose:
+      - "3000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 768m
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN in .env}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      web:
+        condition: service_healthy
+volumes:
+  orbit_data:
+  orbit_backups:
+  caddy_data:
+  caddy_config:
